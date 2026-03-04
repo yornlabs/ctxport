@@ -25,6 +25,7 @@ export {
   chatgptPlugin,
   claudePlugin,
   deepseekPlugin,
+  doubaoPlugin,
   geminiPlugin,
   githubPlugin,
   grokPlugin,
@@ -34,6 +35,7 @@ export {
 import { chatgptPlugin } from "./plugins/chatgpt/plugin";
 import { claudePlugin } from "./plugins/claude/plugin";
 import { deepseekPlugin } from "./plugins/deepseek/plugin";
+import { doubaoPlugin } from "./plugins/doubao/plugin";
 import { geminiPlugin } from "./plugins/gemini/plugin";
 import { githubPlugin } from "./plugins/github/plugin";
 import { grokPlugin } from "./plugins/grok/plugin";
@@ -41,6 +43,7 @@ export const EXTENSION_HOST_PERMISSIONS = [
   ...chatgptPlugin.urls.hosts,
   ...claudePlugin.urls.hosts,
   ...deepseekPlugin.urls.hosts,
+  ...doubaoPlugin.urls.hosts,
   ...geminiPlugin.urls.hosts,
   ...githubPlugin.urls.hosts,
   ...grokPlugin.urls.hosts,

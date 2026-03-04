@@ -185,6 +185,8 @@ const en = {
     "Copy conversations from chat.deepseek.com",
   "web.home.platforms.grok.name": "Grok",
   "web.home.platforms.grok.desc": "Copy conversations from grok.com",
+  "web.home.platforms.doubao.name": "Doubao",
+  "web.home.platforms.doubao.desc": "Copy conversations from www.doubao.com",
   "web.home.platforms.github.name": "GitHub Copilot",
   "web.home.platforms.github.desc":
     "Copy conversations from github.com Copilot chat",

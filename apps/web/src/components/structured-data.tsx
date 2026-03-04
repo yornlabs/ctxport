@@ -5,7 +5,7 @@ const softwareApp = {
   "@type": "SoftwareApplication",
   name: "CtxPort",
   description:
-    "Copy AI conversations as structured Markdown Context Bundles. One-click copy from ChatGPT, Claude, Gemini, DeepSeek, Grok and more.",
+    "Copy AI conversations as structured Markdown Context Bundles. One-click copy from ChatGPT, Claude, Gemini, DeepSeek, Grok, Doubao and more.",
   url: siteConfig.url,
   applicationCategory: "BrowserApplication",
   operatingSystem: "Chrome",
