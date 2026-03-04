@@ -153,7 +153,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Upsert PR comment with preview URL (no spam)
-        if: ${{ always() && (steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped') }}
+        if: ${{ always() && (steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped') && github.event.pull_request.head.repo.fork == false }}
         uses: actions/github-script@v8
         env:
           MARKER: ${{ env.PREVIEW_COMMENT_MARKER }}
