@@ -165,6 +165,8 @@ const zh: LocaleMessages = {
   "web.home.platforms.deepseek.desc": "支持 chat.deepseek.com",
   "web.home.platforms.grok.name": "Grok",
   "web.home.platforms.grok.desc": "支持 grok.com",
+  "web.home.platforms.doubao.name": "豆包",
+  "web.home.platforms.doubao.desc": "支持 www.doubao.com",
   "web.home.platforms.github.name": "GitHub Copilot",
   "web.home.platforms.github.desc": "支持 github.com Copilot 聊天",
 

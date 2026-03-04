@@ -130,8 +130,22 @@ jobs:
           name: website-build
           path: ${{ env.WEBSITE_DIR }}
 
+      - name: Resolve preview deploy eligibility
+        id: preview_eligibility
+        shell: bash
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [[ -n "${CF_API_TOKEN}" && -n "${CF_ACCOUNT_ID}" ]]; then
+            echo "can_deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "can_deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Deploy Preview to Cloudflare
         id: deploy
+        if: ${{ steps.preview_eligibility.outputs.can_deploy == 'true' }}
         working-directory: ${{ env.WEBSITE_DIR }}
         run: pnpm dlx @opennextjs/cloudflare deploy --env preview
         env:
@@ -139,25 +153,57 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Upsert PR comment with preview URL (no spam)
+        if: ${{ always() && (steps.deploy.outcome == 'success' || steps.deploy.outcome == 'skipped') && github.event.pull_request.head.repo.fork == false }}
         uses: actions/github-script@v8
         env:
           MARKER: ${{ env.PREVIEW_COMMENT_MARKER }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          HEAD_IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+          HAS_CF_SECRETS: ${{ steps.preview_eligibility.outputs.can_deploy }}
         with:
           script: |
             const marker = process.env.MARKER;
-            const url = process.env.DEPLOYMENT_URL || "Check the Cloudflare dashboard for the preview URL.";
+            const url = process.env.DEPLOYMENT_URL || "";
+            const deployOutcome = (process.env.DEPLOY_OUTCOME || "").toLowerCase();
+            const isFork = (process.env.HEAD_IS_FORK || "").toLowerCase() === "true";
+            const hasCfSecrets = (process.env.HAS_CF_SECRETS || "").toLowerCase() === "true";
 
-            const body = `${marker}
-            ## 🚀 Preview Deployment Ready!
+            const baseMeta = `- Branch: \`${context.payload.pull_request.head.ref}\`
+            - Commit: \`${context.sha}\``;
 
-            Preview URL: ${url}
+            let body;
+            if (deployOutcome === "success") {
+              body = `${marker}
+              ## 🚀 Preview Deployment Ready!
 
-            - Branch: \`${context.payload.pull_request.head.ref}\`
-            - Commit: \`${context.sha}\`
+              Preview URL: ${url || "Check the Cloudflare dashboard for the preview URL."}
 
-            (This comment will be updated on new pushes.)
-            `;
+              ${baseMeta}
+
+              (This comment will be updated on new pushes.)
+              `;
+            } else if (!hasCfSecrets && isFork) {
+              body = `${marker}
+              ## ℹ️ Preview Deployment Skipped
+
+              This PR comes from a fork, and repository Cloudflare secrets are not exposed to \`pull_request\` workflows.
+
+              ${baseMeta}
+
+              (This comment will be updated on new pushes.)
+              `;
+            } else {
+              body = `${marker}
+              ## ℹ️ Preview Deployment Skipped
+
+              Preview deployment was skipped because required Cloudflare secrets are missing.
+
+              ${baseMeta}
+
+              (This comment will be updated on new pushes.)
+              `;
+            }
 
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;

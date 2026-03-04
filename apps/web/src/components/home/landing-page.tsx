@@ -43,6 +43,7 @@ const PLATFORMS = [
   "Gemini",
   "DeepSeek",
   "Grok",
+  "Doubao",
   "GitHub",
 ] as const;
 
@@ -620,6 +621,10 @@ function PlatformsSection() {
     {
       name: t("web.home.platforms.grok.name"),
       desc: t("web.home.platforms.grok.desc"),
+    },
+    {
+      name: t("web.home.platforms.doubao.name"),
+      desc: t("web.home.platforms.doubao.desc"),
     },
     {
       name: t("web.home.platforms.github.name"),
